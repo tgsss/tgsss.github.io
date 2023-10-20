@@ -8,8 +8,65 @@ preview: "assets/images/posts/2023-10-18-2d-geometric-constraint-solver/preview.
 {% include vars.html %}
 {% include mathjax.html %}
 
-Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Facilisi cras fermentum odio eu feugiat. Blandit cursus risus at ultrices mi. Tempor orci dapibus ultrices in iaculis nunc sed augue lacus. Porttitor leo a diam sollicitudin. Libero justo laoreet sit amet cursus sit. Nisl purus in mollis nunc sed id semper risus in. Non enim praesent elementum facilisis leo. Tristique magna sit amet purus gravida quis. Orci porta non pulvinar neque. Urna id volutpat lacus laoreet non curabitur gravida arcu. Aliquet lectus proin nibh nisl condimentum id venenatis. Sit amet venenatis urna cursus.
+### Содержание
+1. [Вступление](#intro)
+1. [Постановка задачи](#requirements)
+1. [Обозначения](#definitions)
+1. [Оптимизация](#optimization)
 
-Duis at consectetur lorem donec massa sapien faucibus et molestie. Adipiscing bibendum est ultricies integer quis auctor elit sed vulputate. Purus in mollis nunc sed. Ultricies integer quis auctor elit sed vulputate mi sit amet. Lectus sit amet est placerat in egestas. Ac tincidunt vitae semper quis lectus nulla. Morbi tempus iaculis urna id volutpat lacus laoreet non curabitur. Ipsum suspendisse ultrices gravida dictum. Interdum velit laoreet id donec ultrices tincidunt. Nulla facilisi nullam vehicula ipsum a arcu cursus vitae. Tellus elementum sagittis vitae et leo duis.
+### Вступление <a name="intro"></a>
 
-$$ x = y^2 $$
+<!--excerpt-->
+
+Я провожу кучу времени в MCAD программах, таких как SolidWorks, Onshape, Fusion 360 и так далее. И мне всегда было интересно, как они устроены "под капотом". Поэтому, движимый идеей о том, что лучший способ разобраться в чем-то -- это реализовать это что-то самому с нуля, я решил закодить свой редактор 2D чертежей, который вел бы себя так же, как в во "взрослых" MCAD программах.
+
+Для того, чтобы упростить задачу, я принял допущение о том, что редактор должен поддерживать очень ограниченный набор геометрических примитивов: только отрезки и дуги. Набор доступных ограничений также не должен быть всеобъемлющим, достаточно будет реализовать только основные.
+
+Главная задача, которую необходимо решить в процессе создания такой программы, называется [Geometric constraint solving](https://en.wikipedia.org/wiki/Geometric_constraint_solving). Для того, чтобы сделать задачу более сложной и интересной, я решил не исследовать существующие подходы к решению этой задачи, а придумать это решение с нуля.
+
+Вот что в итоге у меня получилось:
+
+<img src="{{ site.baseurl }}/assets/images/posts/2023-10-18-2d-geometric-constraint-solver/preview.gif"/>
+
+### Постановка задачи <a name="requirements"></a>
+
+Основные функции разрабатываемого 2D редактора, которые должны поддерживаться:
+
+1. Добавление новых и удаление существующих геометрических примитивов (только отрезки или дуги)
+2. Изменение с помощью мыши уже добавленных геометрических примитивов. **При любом изменении любого геометрического примитива, существующие наложенные ограничения должны оставаться валидными. Чтобы достичь этого, все существующие геометрические примитивы при необходимости могут перемещаться и изменять свои параметры**
+3. Наложение новых ограничений на существующие геометрические примитивы и удаление существующих ограничений
+
+Список ограничений, которые должны поддерживаться:
+
+1. **COINCIDENCE**: совпадение точек
+2. **PARALLELITY**: параллельность отрезков
+3. **PERPENDICULARITY**: перпендикулярность отрезков
+4. **EQUAL_LENGTH_OR_RADIUS**: равная длина отрезков или равный радиус дуг
+5. **FIXED**: неподвижность точек
+6. **HORIZONTALITY**: горизонтальность точек
+7. **VERTICALITY**: вертикальность точек
+8. **TANGENCY**: касательность дуги и отрезка или касательность двух дуг
+9. **CONCENTRICITY**: концентричность дуг
+
+### Обозначения <a name="definitions"></a>
+
+1. $x$ -- скаляр
+2. $\vec{y}$ -- вектор
+3. $\vec{f}()$ -- [вектор-функция](https://ru.wikipedia.org/wiki/%D0%92%D0%B5%D0%BA%D1%82%D0%BE%D1%80-%D1%84%D1%83%D0%BD%D0%BA%D1%86%D0%B8%D1%8F)
+
+### Оптимизация <a name="optimization"></a>
+
+$$
+\begin{array}{rl}
+\min _\vec{x} & f(\vec{x}) \\
+\text { subject to } & \vec{h}(\vec{x}) \geq 0 \\
+& \vec{g}(\vec{x})=0 .
+\end{array}
+$$
+
+$$
+\begin{array}{rl}
+\min _\vec{x} & f(\vec{x}) \\
+\text { subject to } & \vec{g}(\vec{x})=0.
+\end{array}
+$$
