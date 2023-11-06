@@ -12,13 +12,14 @@ preview: "assets/images/posts/2023-10-18-2d-geometric-constraint-solver/preview.
 1. [Вступление](#intro)
 1. [Постановка задачи](#requirements)
 1. [Обозначения](#definitions)
+1. [Пример](#example)
 1. [Оптимизация](#optimization)
 
 ### Вступление <a name="intro"></a>
 
 <!--excerpt-->
 
-Я провожу кучу времени в MCAD программах, таких как SolidWorks, Onshape, Fusion 360 и т.д. Мне всегда было интересно, как они устроены "под капотом", поэтому я решил создать свой собственный 2D-редактор чертежей с ограниченным набором геометрических примитивов (только отрезки и дуги окружностей) и базовыми ограничениями. Главная проблема, которую нужно решить, это [Geometric constraint solving](https://en.wikipedia.org/wiki/Geometric_constraint_solving), и для фана я решил разработать свой метод решения этой проблемы, не изучая предварительно и не используя существующие подходы.
+Я провожу кучу времени в MCAD программах, таких как SolidWorks, Onshape, Fusion 360 и т.д. Мне всегда было интересно, как они устроены "под капотом", поэтому я решил создать свой собственный 2D-редактор чертежей с ограниченным набором геометрических примитивов (только отрезки и дуги окружностей) и базовыми ограничениями. Главная проблема, которую нужно решить, это [Geometric constraint solving](https://en.wikipedia.org/wiki/Geometric_constraint_solving), и для фана я решил разработать свой метод решения этой проблемы, не изучая предварительно существующие подходы.
 
 Вот что в итоге у меня получилось:
 
@@ -49,6 +50,11 @@ preview: "assets/images/posts/2023-10-18-2d-geometric-constraint-solver/preview.
 1. $x$ -- скаляр
 2. $\vec{y}$ -- вектор
 3. $\vec{f}()$ -- [вектор-функция](https://ru.wikipedia.org/wiki/%D0%92%D0%B5%D0%BA%D1%82%D0%BE%D1%80-%D1%84%D1%83%D0%BD%D0%BA%D1%86%D0%B8%D1%8F)
+
+### Пример <a name="example"></a>
+
+{% include clickableSVG.html path=images_path name="example0.svg" %}
+{% include clickableSVG.html path=images_path name="example1.svg" %}
 
 ### Оптимизация <a name="optimization"></a>
 
