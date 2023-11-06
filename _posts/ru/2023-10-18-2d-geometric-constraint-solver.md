@@ -24,6 +24,8 @@ preview: "assets/images/posts/2023-10-18-2d-geometric-constraint-solver/preview.
 
 <img src="{{ site.baseurl }}/assets/images/posts/2023-10-18-2d-geometric-constraint-solver/preview.gif"/>
 
+Программа написана на Python, исходный код [доступен на GitHub](https://github.com/AntonEvmenenko/2d_geometric_constraint_solver). Ниже я постараюсь объяснить, как все это устроено.
+
 ### Постановка задачи <a name="requirements"></a>
 
 Основные функции разрабатываемого 2D редактора, которые должны поддерживаться:
@@ -70,7 +72,7 @@ preview: "assets/images/posts/2023-10-18-2d-geometric-constraint-solver/preview.
 
 Запишем определенные выше задачи солвера более формальным языком:
 
-$$distance(C', C_1) \rightarrow min$$
+$$dist(C', C_1) \rightarrow min$$
 
 $$
 \begin{cases}
@@ -104,17 +106,34 @@ $$
 \end{array}
 $$
 
-Явно выразим $f(\vec{x})$ и $\vec{g}(\vec{x})$:
+Явно выразим вектор $\vec{x}$:
 
 $$
-f(\vec{x})=distance(C', C_1)
+\vec{x}=
+\begin{pmatrix}
+    A_x & A_y & B_x & B_y & C_x & C_y
+\end{pmatrix}
+^\intercal
 $$
+
+Явно выразим $f(\vec{x})$ через компоненты вектора $\vec{x}$:
+
+$$
+f(\vec{x})=dist(C', C_1)=\sqrt{(C'_x - C_{1x})^2 + (C'_y - C_{1y})^2}
+$$
+
+Явно выразим $\vec{g}(\vec{x})$ через компоненты вектора $\vec{x}$:
 
 $$
 \vec{g}(\vec{x})=
 \begin{pmatrix}
     dot(\overline{A_1B_1}, \overline{B_1C_1}) \\
     \norm{\overline{A_1B_1}} - \norm{\overline{B_1C_1}}
+\end{pmatrix}
+=
+\begin{pmatrix}
+    (B_{1x} - A_{1x}) \cdot (C_{1x} - B_{1x}) + (B_{1y} - A_{1y}) \cdot (C_{1y} - B_{1y}) \\
+    \sqrt{(B_{1x} - A_{1x})^2 + (B_{1y} - A_{1y})^2} - \sqrt{(C_{1x} - B_{1x})^2 + (C_{1y} - B_{1y})^2}
 \end{pmatrix}
 $$
 
