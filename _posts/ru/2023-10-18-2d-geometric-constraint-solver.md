@@ -11,9 +11,8 @@ preview: "assets/images/posts/2023-10-18-2d-geometric-constraint-solver/preview.
 ### Содержание
 1. [Вступление](#intro)
 1. [Постановка задачи](#requirements)
-1. [Обозначения](#definitions)
 1. [Пример](#example)
-1. [Оптимизация](#optimization)
+1. [Обозначения](#definitions)
 
 ### Вступление <a name="intro"></a>
 
@@ -45,18 +44,48 @@ preview: "assets/images/posts/2023-10-18-2d-geometric-constraint-solver/preview.
 8. **TANGENCY**: касательность дуги и отрезка или касательность двух дуг
 9. **CONCENTRICITY**: концентричность дуг
 
-### Обозначения <a name="definitions"></a>
-
-1. $x$ -- скаляр
-2. $\vec{y}$ -- вектор
-3. $\vec{f}()$ -- [вектор-функция](https://ru.wikipedia.org/wiki/%D0%92%D0%B5%D0%BA%D1%82%D0%BE%D1%80-%D1%84%D1%83%D0%BD%D0%BA%D1%86%D0%B8%D1%8F)
+Для того, чтобы разобраться, как все это работает, рассмотрим пример:
 
 ### Пример <a name="example"></a>
 
+Допустим, у нас есть два отрезка, $AB$ и $BC$. Также у нас есть вот такие ограничения:
+
+1. $AB$ и $BC$ перпендикулярны
+1. $AB$ и $BC$ имеют равную длину
+
 {% include clickableSVG.html path=images_path name="example0.svg" %}
+
+Допустим, в момент времени $t_0$ система находилась в решенном состоянии, все ограничения были удовлетворены, этому состоянию соответствуют отрезки $A_0B_0$ и $B_0C_0$ на картинке ниже. Затем, мы с помощью мыши мы мгновенно изменили положение точки $C_0$, принадлежащей отрезку $B_0C_0$, после чего эта точка перешла в положение $C'$:
+
 {% include clickableSVG.html path=images_path name="example1.svg" %}
 
-### Оптимизация <a name="optimization"></a>
+Далее должен отработать солвер, который должен найти новые (соответствующие моменту времени $t_1$) положения всех отрезков, что фактически означает поиск точек $A_1$, $B_1$ и $C_1$. У солвера есть две задачи:
+
+1. Необходимо, чтобы точка $C_1$ была как можно ближе к точке $C'$. Иногда (но не всегда) возможно обеспечить совпадение этих точек
+2. Необходимо, чтобы все существующие ограничения были удовлетворены
+
+Вот так все будет выглядеть после того, как солвер завершит свою работу:
+
+{% include clickableSVG.html path=images_path name="example2.svg" %}
+
+Запишем определенные выше задачи солвера более формальным языком:
+
+$$distance(C', C_1) \rightarrow min$$
+
+$$
+\begin{cases}
+    A_1B_1 \perp B_1C_1\\
+    \norm{\overline{A_1B_1}} = \norm{\overline{B_1C_1}}
+\end{cases}
+\Rightarrow
+\begin{pmatrix}
+    dot(\overline{A_1B_1}, \overline{B_1C_1}) \\
+    \norm{\overline{A_1B_1}} - \norm{\overline{B_1C_1}}
+\end{pmatrix}
+=0
+$$
+
+В том, что получилось, можно увидеть частный случай задачи [нелинейного программирования](https://en.wikipedia.org/wiki/Nonlinear_programming). Общий вид задачи нелинейного программирования таков:
 
 $$
 \begin{array}{rl}
@@ -66,9 +95,31 @@ $$
 \end{array}
 $$
 
+Функция $\vec{h}(\vec{x})$ описывает ограничения-неравенства, $\vec{g}(\vec{x})$ -- ограничения-равенства. У нас есть только ограничения-равенства, поэтому уравнения принимают следующий вид:
+
 $$
 \begin{array}{rl}
 \min _\vec{x} & f(\vec{x}) \\
 \text { subject to } & \vec{g}(\vec{x})=0.
 \end{array}
 $$
+
+Явно выразим $f(\vec{x})$ и $\vec{g}(\vec{x})$:
+
+$$
+f(\vec{x})=distance(C', C_1)
+$$
+
+$$
+\vec{g}(\vec{x})=
+\begin{pmatrix}
+    dot(\overline{A_1B_1}, \overline{B_1C_1}) \\
+    \norm{\overline{A_1B_1}} - \norm{\overline{B_1C_1}}
+\end{pmatrix}
+$$
+
+### Обозначения <a name="definitions"></a>
+
+1. $x$ -- скаляр
+2. $\vec{y}$ -- вектор
+3. $\vec{f}()$ -- [вектор-функция](https://ru.wikipedia.org/wiki/%D0%92%D0%B5%D0%BA%D1%82%D0%BE%D1%80-%D1%84%D1%83%D0%BD%D0%BA%D1%86%D0%B8%D1%8F)
